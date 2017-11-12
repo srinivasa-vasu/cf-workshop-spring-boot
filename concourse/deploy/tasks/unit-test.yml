@@ -8,9 +8,6 @@ image_resource:
 
 inputs:
   - name: git-repo
-  
-outputs:
-- name: artifacts
-  
+    
 run:
   path: ./git-repo/concourse/deploy/tasks/unit-test.sh  
