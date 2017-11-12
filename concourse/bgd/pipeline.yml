@@ -6,7 +6,6 @@ resource_types:
     tag: latest
 
 resources:
-
 - name: git-repo
   type: git
   source:
