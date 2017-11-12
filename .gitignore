@@ -1,5 +1,7 @@
 /target/
 
+.vscode/
+
 #concourse
 credentials.yml
 

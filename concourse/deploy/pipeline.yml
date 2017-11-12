@@ -1,0 +1,110 @@
+resource_types:
+- name: gcs-resource
+  type: docker-image
+  source:
+    repository: frodenas/gcs-resource
+    tag: latest
+
+resources:
+
+- name: git-repo
+  type: git
+  source:
+    uri: https://github.com/srinivasa-vasu/cf-workshop-spring-boot.git
+    branch: master
+    
+- name: version
+  type: semver
+  source:
+    initial_version: 1.0.0
+    driver: gcs
+    bucket: cn-pcf-bkt
+    json_key: {{gcp_service_account_key}}
+    key: current-version
+
+- name: artifacts
+  type: gcs-resource
+  source:
+    bucket: cn-pcf-bkt
+    json_key: {{gcp_service_account_key}}
+    regexp: releases/boot-app-(.*).jar
+
+- name: cf-dev
+  type: cf
+  source:
+    api: {{cf-api}}
+    skip_cert_check: true
+    organization: {{cf-organization}}
+    username: {{cf-username}}
+    password: {{cf-password}}
+    space: {{cf-space-dev}}
+    
+- name: cf-stage
+  type: cf
+  source:
+    api: {{cf-api}}
+    skip_cert_check: true
+    organization: {{cf-organization}}
+    username: {{cf-username}}
+    password: {{cf-password}}
+    space: {{cf-space-stage}}
+
+jobs:
+
+- name: unit-test
+  serial_groups: [version]
+  plan:
+  - get: git-repo
+    trigger: true
+  - get: version
+    params: {bump: final}
+  - task: unit-test
+    file: git-repo/concourse/deploy/tasks/unit-test.yml
+  - put: artifacts
+    params: 
+      file: artifacts/boot-app-*.jar
+  - put: version
+    params: {bump: minor}
+
+- name: unit-pkg
+  serial_groups: [version]
+  plan:
+  - get: git-repo
+    trigger: true
+  - get: version
+    params: {bump: final}
+  - task: build-package
+    file: git-repo/concourse/deploy/tasks/build-package.yml
+  - put: artifacts
+    params: 
+      file: artifacts/boot-app-*.jar
+  - put: version
+    params: {bump: minor}
+
+- name: dev
+  plan:
+  - get: artifacts
+    trigger: true
+    passed:
+    - unit-pkg
+  - get: git-repo
+    passed:
+    - unit-pkg
+  - put: cf-dev
+    params:
+      manifest: git-repo/manifest.yml
+      path: artifacts/boot-app-*.jar
+
+- name: stage
+  plan:
+  - get: git-repo
+    passed:
+      - dev
+  - get: artifacts
+    passed:
+      - dev
+  - put: cf-stage
+    params:
+      manifest: git-repo/manifest.yml
+      path: artifacts/boot-app-*.jar
+      current_app_name: boot-app
