@@ -56,23 +56,20 @@ jobs:
   plan:
   - get: git-repo
     trigger: true
-  - get: version
-    params: {bump: final}
   - task: unit-test
     file: git-repo/concourse/deploy/tasks/unit-test.yml
-  - put: artifacts
-    params: 
-      file: artifacts/boot-app-*.jar
-  - put: version
-    params: {bump: minor}
 
 - name: unit-pkg
   serial_groups: [version]
   plan:
   - get: git-repo
     trigger: true
+    passed:
+    - unit-test
   - get: version
     params: {bump: final}
+    passed:
+    - unit-test
   - task: build-package
     file: git-repo/concourse/deploy/tasks/build-package.yml
   - put: artifacts

@@ -8,11 +8,9 @@ image_resource:
 
 inputs:
   - name: git-repo
-  - name: version
   
 outputs:
 - name: artifacts
   
 run:
   path: ./git-repo/concourse/deploy/tasks/unit-test.sh  
-params: {version: version/number}
