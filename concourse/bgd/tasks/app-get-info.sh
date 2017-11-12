@@ -3,6 +3,7 @@
 set -xe
 
 pwd
+
 env
 
 cf api $API --skip-ssl-validation
@@ -10,8 +11,6 @@ cf api $API --skip-ssl-validation
 cf login -u $USER -p $PWD -o "$ORG" -s "$SPACE"
 
 cf apps
-
-cd git-repo
 
 set +e
 cf apps | grep "$APP_SUFFIX" | grep green

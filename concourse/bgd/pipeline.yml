@@ -38,15 +38,6 @@ resources:
     password: {{cf-password}}
     space: {{cf-space-dev}}
     
-- name: cf-stage
-  type: cf
-  source:
-    api: {{cf-api}}
-    skip_cert_check: true
-    organization: {{cf-organization}}
-    username: {{cf-username}}
-    password: {{cf-password}}
-    space: {{cf-space-stage}}
 
 jobs:
 
