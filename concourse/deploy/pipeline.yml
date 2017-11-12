@@ -52,7 +52,6 @@ resources:
 jobs:
 
 - name: unit-test
-  serial_groups: [version]
   plan:
   - get: git-repo
     trigger: true
@@ -68,8 +67,6 @@ jobs:
     - unit-test
   - get: version
     params: {bump: final}
-    passed:
-    - unit-test
   - task: build-package
     file: git-repo/concourse/deploy/tasks/build-package.yml
   - put: artifacts
