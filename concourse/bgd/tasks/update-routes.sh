@@ -2,12 +2,9 @@
 
 set -xe
 
-pwd
-env
-
 cf api $API --skip-ssl-validation
 
-cf login -u $USER -p $PWD -o "$ORG" -s "$SPACE"
+cf login -u $USER -p $PASSWORD -o "$ORG" -s "$SPACE"
 
 cf apps
 
