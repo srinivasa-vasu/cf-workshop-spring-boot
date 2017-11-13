@@ -15,8 +15,15 @@ then
   echo "green" > ./app-info/current-app.txt
   echo "blue" > ./app-info/next-app.txt
 else
-  echo "blue" > ./app-info/current-app.txt
-  echo "green" > ./app-info/next-app.txt
+  cf apps | grep "$APP_SUFFIX" | grep blue
+  if [ $? -eq 0 ]
+  then
+    echo "blue" > ./app-info/current-app.txt
+    echo "green" > ./app-info/next-app.txt
+  else
+    echo "blue" > ./app-info/current-app.txt
+    echo "blue" > ./app-info/next-app.txt
+  fi
 fi
 set -xe
 

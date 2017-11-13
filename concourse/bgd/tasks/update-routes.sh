@@ -23,10 +23,12 @@ cf map-route $APP_NAME $DOMAIN_NAME -n $ROUTE_HOSTNAME
 
 cf routes
 
-echo "Removing previous main app route that pointed to $CURRENT_APP_NAME instance"
-
 set +e
-cf unmap-route $CURRENT_APP_NAME $DOMAIN_NAME -n $ROUTE_HOSTNAME
+if [ $(cat ./app-info/current-app.txt) -ne $(cat ./app-info/next-app.txt) ]
+then
+    echo "Removing previous main app route that pointed to $CURRENT_APP_NAME instance"
+    cf unmap-route $CURRENT_APP_NAME $DOMAIN_NAME -n $ROUTE_HOSTNAME
+fi
 set -e
 
 echo "Routes updated"
