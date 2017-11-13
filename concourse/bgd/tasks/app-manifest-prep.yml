@@ -16,3 +16,4 @@ outputs:
 
 run:
   path: ./git-repo/concourse/bgd/tasks/app-manifest-prep.sh
+  

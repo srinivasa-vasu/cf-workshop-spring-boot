@@ -15,3 +15,4 @@ outputs:
 
 run:
   path: ./git-repo/concourse/bgd/tasks/app-get-info.sh
+  

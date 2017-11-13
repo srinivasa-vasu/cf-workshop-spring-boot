@@ -14,3 +14,4 @@ inputs:
 
 run:
   path: ./git-repo/concourse/bgd/tasks/update-routes.sh
+  
