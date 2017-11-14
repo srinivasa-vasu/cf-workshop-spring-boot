@@ -67,7 +67,7 @@ jobs:
   - put: version
     params: {bump: minor}
 
-- name: deploy-app
+- name: bluegreen-deploy
   serial: true
   public: true
   plan:
@@ -75,13 +75,17 @@ jobs:
     trigger: true
     passed:
       - unit-pkg
+  - get: artifacts
+    trigger: true
+    passed:
+      - unit-pkg      
   - task: get-current-info
     file: git-repo/concourse/bgd/tasks/app-get-info.yml
     params:
       API: {{cf-api}}
       ORG: {{cf-organization}}
       USER: {{cf-username}}
-      PWD: {{cf-password}}
+      PASSWORD: {{cf-password}}
       SPACE: {{cf-space-dev}}
       APP_SUFFIX: {{cf-app-suffix}}
   - task: prepare-app-manifest
@@ -100,14 +104,14 @@ jobs:
   - get: git-repo
     trigger: true
     passed:
-      - deploy-app
+      - bluegreen-deploy
   - task: get-current-info
     file: git-repo/concourse/bgd/tasks/app-get-info.yml
     params:
       API: {{cf-api}}
       ORG: {{cf-organization}}
       USER: {{cf-username}}
-      PWD: {{cf-password}}
+      PASSWORD: {{cf-password}}
       SPACE: {{cf-space-dev}}
   - task: switch-app-routes
     file: git-repo/concourse/bgd/tasks/update-routes.yml
@@ -115,7 +119,7 @@ jobs:
       API: {{cf-api}}
       ORG: {{cf-organization}}
       USER: {{cf-username}}
-      PWD: {{cf-password}}
+      PASSWORD: {{cf-password}}
       SPACE: {{cf-space-dev}}
       APP_SUFFIX: {{cf-app-suffix}}
       APP_DOMAIN: {{cf-app-domain}}    
